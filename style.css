@@ -1,0 +1,302 @@
+/* ================= RESET ================= */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:#000;
+  color:#fff;
+  font-family:Inter,system-ui,Arial,sans-serif;
+  overflow-x:hidden;
+}
+
+/* ================= NAVBAR ================= */
+nav{
+  position:fixed;
+  top:0;
+  width:100%;
+  padding:18px 60px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(14px);
+  z-index:1000;
+}
+
+.nav-brand{
+  font-size:20px;
+  font-weight:700;
+  color:#fff;
+}
+
+.nav-links{
+  display:flex;
+  gap:28px;
+}
+
+.nav-links a{
+  font-size:15px;
+  color:#ccc;
+  text-decoration:none;
+  position:relative;
+  transition:.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active{
+  color:#fff;
+}
+
+.nav-links a::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-6px;
+  width:0%;
+  height:2px;
+  background:#fff;
+  transition:.3s;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after{
+  width:100%;
+}
+
+/* Hamburger toggle */
+.nav-toggle{
+  display:none;
+  font-size:26px;
+  color:#fff;
+  cursor:pointer;
+}
+
+/* ================= HERO ================= */
+.hero{
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:0 24px;
+  background:
+    linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.85)),
+    url(./image.jpeg)
+    center/cover no-repeat;
+}
+.hero-content{
+  max-width:900px;
+  animation:fadeUp 1.4s ease forwards;
+}
+.hero h1{font-size:60px;margin-bottom:18px}
+.hero p{font-size:18px;color:#ddd}
+
+/* Updated Button Container */
+.hero-btns {
+  margin-top: 35px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.hero button{
+  padding:16px 46px;
+  border-radius:50px;
+  border:none;
+  background:#fff;
+  color:#000;
+  cursor:pointer;
+  transition:.4s;
+  font-weight: 600;
+}
+.hero button:hover{
+  transform:scale(1.07);
+  box-shadow:0 0 40px rgba(255,255,255,.4);
+}
+
+/* ================= MAIN ================= */
+.main{
+  min-height:90vh;
+  display:flex;
+  align-items:center;
+  padding:0 80px;
+  background:
+    linear-gradient(rgba(0,0,0,.65),rgba(0,0,0,.9)),
+    url("frontend/image.jpeg")
+    center/cover no-repeat;
+}
+.main h2{font-size:52px;margin-bottom:20px}
+.main p{max-width:700px;color:#ccc;font-size:18px}
+
+/* ================= SECTIONS ================= */
+section{padding:140px 80px}
+
+/* ================= FEATURES ================= */
+.features{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:50px;
+}
+.card{
+  background-size:cover;
+  background-position:center;
+  border-radius:26px;
+  padding:44px;
+  position:relative;
+  opacity:0;
+  transform:translateY(60px);
+  transition:1s cubic-bezier(.19,1,.22,1);
+}
+.card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.9));
+}
+.card *{position:relative;z-index:2}
+.card.show{opacity:1;transform:translateY(0)}
+.card h3{font-size:22px;margin-bottom:14px}
+.card p{color:#ddd;line-height:1.7}
+
+.card.camera{background-image:url("https://images.unsplash.com/photo-1516035069371-29a1b244cc32")}
+.card.cloud{background-image:url("https://images.unsplash.com/photo-1451187580459-43490279c0fa")}
+.card.processing{background-image:url("https://images.unsplash.com/photo-1555949963-aa79dcee981c")}
+.card.mobile{background-image:url("https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f")}
+.card.admin{background-image:url("https://images.unsplash.com/photo-1556155092-8707de31f9c4")}
+
+/* ================= STICKY ================= */
+.sticky{
+  position:sticky;
+  top:0;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  padding:0 80px;
+  background:
+    linear-gradient(rgba(0,0,0,.7),rgba(0,0,0,.9)),
+    url("C:\Users\dhanb\OneDrive\Desktop\Live-gallery-project\frontend\image.jpeg")
+    center/cover no-repeat;
+}
+.sticky h2{font-size:52px;margin-bottom:20px}
+.sticky p{color:#ccc;max-width:520px}
+
+/* ================= FLOW ================= */
+.flow{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:40px;
+}
+.flow div{
+  padding:32px;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(0,0,0,.6);
+  text-align:center;
+  transition:.4s;
+}
+.flow div:hover{
+  transform:translateY(-10px);
+  background:rgba(255,255,255,.05);
+}
+
+/* ================= CTA ================= */
+.cta{
+  background:#111;
+  text-align:center;
+}
+.cta h2{font-size:48px}
+.cta button{
+  margin-top:30px;
+  padding:18px 50px;
+  border-radius:50px;
+  border:none;
+  background:#fff;
+  color:#000;
+  cursor:pointer;
+  transition:.4s;
+}
+.cta button:hover{
+  transform:scale(1.06);
+  box-shadow:0 0 45px rgba(255,255,255,.4);
+}
+
+/* ================= FOOTER ================= */
+footer{
+  padding:40px;
+  text-align:center;
+  color:#777;
+  font-size:14px;
+}
+
+/* ================= ANIMATION ================= */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(40px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:1024px){
+  nav{padding:18px 40px}
+  section,.main{padding:100px 40px}
+  .hero h1{font-size:48px}
+}
+
+@media(max-width:768px){
+  nav{padding:16px 24px}
+  .nav-links{
+    position:absolute;
+    top:70px;
+    right:0;
+    background:rgba(0,0,0,.9);
+    flex-direction:column;
+    gap:20px;
+    padding:20px;
+    width:200px;
+    display:none;
+    border-radius:8px;
+    animation:slideDown .4s ease forwards;
+  }
+  .nav-links.show{display:flex}
+  .nav-toggle{display:block}
+  .hero h1{font-size:38px}
+  .hero p{font-size:16px}
+  .hero-btns { flex-direction: column; align-items: center; gap: 15px; }
+  .main{ min-height:auto; padding:90px 24px; }
+  .main h2{font-size:36px}
+  section{padding:90px 24px}
+  .features{grid-template-columns:1fr}
+  .sticky{ text-align:center; padding:0 24px; }
+  .sticky h2{font-size:36px}
+  .flow{grid-template-columns:1fr}
+  .cta h2{font-size:36px}
+}
+
+@keyframes slideDown {
+  from {opacity:0; transform:translateY(-20px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+.gallery-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+}
+
+.gallery-grid img {
+  width: 220px;
+  border-radius: 12px;
+}
+
+
+#gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+#gallery img {
+  width: 220px;
+  border-radius: 12px;
+}
