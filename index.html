@@ -195,6 +195,23 @@ video { width: 95%; max-width: 600px; border-radius: 20px; border: 2px solid #33
   box-shadow: 0 10px 25px rgba(0,0,0,0.5);
   overflow: hidden;
 }
+.flip-btn{
+  position: fixed;
+  bottom: 120px;
+  right: 30px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 2px solid #fff;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 2100;
+}
+.flip-btn:active{
+  transform: scale(0.9);
+}
 
 .options-menu button {
   padding: 12px 20px;
@@ -248,7 +265,7 @@ video { width: 95%; max-width: 600px; border-radius: 20px; border: 2px solid #33
  
   <input type="file" id="file-upload" accept="image/*" multiple style="display:none" onchange="handleFileUpload(event)">
 </div>
-    <a href="admin.html">Admin Panel</a>
+    <a href="C:\Users\Divya Jadhav\Desktop\C2C\Frontend\admin.html">Admin Panel</a>
   </div>
 </nav>
 
@@ -257,6 +274,8 @@ video { width: 95%; max-width: 600px; border-radius: 20px; border: 2px solid #33
   <video id="webcam" autoplay playsinline></video>
   <button class="capture-btn" onclick="uploadToCloud()"></button>
   <p id="status-msg"></p>
+  <button class="flip-btn" onclick="flipCamera()">⇄</button>
+
   <canvas id="canvas" style="display:none;"></canvas>
 </div>
 
@@ -303,13 +322,14 @@ const SUPABASE_KEY = 'sb_publishable_fApX0PIFhdPdYXV5RU-EZw_Xreoe4nj';
 const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let stream = null;
+let currentFacingMode = "environment";
 
 // ================= CAMERA LOGIC =================
 async function startCamera() {
   const video = document.getElementById('webcam');
   try {
     stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: "environment" } 
+      video: { facingMode: currentFacingMode } 
     });
     video.srcObject = stream;
     document.getElementById('camera-overlay').style.display = 'flex';
@@ -323,6 +343,15 @@ function stopCamera() {
   if (stream) stream.getTracks().forEach(t => t.stop());
   document.getElementById('camera-overlay').style.display = 'none';
   document.body.style.overflow = 'auto';
+}
+
+// ================= FLIP CAMERA =================
+function flipCamera() {
+  currentFacingMode =
+    currentFacingMode === "environment" ? "user" : "environment";
+
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  startCamera();
 }
 
 // ================= UPLOAD & WATERMARKING =================
@@ -449,435 +478,3 @@ document.getElementById('nav-toggle').onclick = () => {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Camera to Cloud Live Gallery</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-/* ================= RESET ================= */
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  background:#000;
-  color:#fff;
-  font-family:Inter,system-ui,Arial,sans-serif;
-  overflow-x:hidden;
-}
-
-/* ================= NAVBAR ================= */
-nav{
-  position:fixed;
-  top:0;
-  width:100%;
-  padding:18px 60px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:rgba(0,0,0,.75);
-  backdrop-filter:blur(14px);
-  z-index:1000;
-}
-
-.nav-brand{
-  font-size:20px;
-  font-weight:700;
-  color:#fff;
-}
-
-.nav-links{
-  display:flex;
-  gap:28px;
-}
-
-.nav-links a{
-  font-size:15px;
-  color:#ccc;
-  text-decoration:none;
-  position:relative;
-  transition:.3s;
-}
-
-.nav-links a:hover,
-.nav-links a.active{
-  color:#fff;
-}
-
-.nav-links a::after{
-  content:"";
-  position:absolute;
-  left:0;
-  bottom:-6px;
-  width:0%;
-  height:2px;
-  background:#fff;
-  transition:.3s;
-}
-
-.nav-links a:hover::after,
-.nav-links a.active::after{
-  width:100%;
-}
-
-/* Hamburger toggle */
-.nav-toggle{
-  display:none;
-  font-size:26px;
-  color:#fff;
-  cursor:pointer;
-}
-
-/* ================= HERO ================= */
-.hero{
-  height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:0 24px;
-  background:
-    linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.85)),
-    url(./image.jpeg)
-    center/cover no-repeat;
-}
-.hero-content{
-  max-width:900px;
-  animation:fadeUp 1.4s ease forwards;
-}
-.hero h1{font-size:60px;margin-bottom:18px}
-.hero p{font-size:18px;color:#ddd}
-
-/* Updated Button Container */
-.hero-btns {
-  margin-top: 35px;
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-}
-
-.hero button{
-  padding:16px 46px;
-  border-radius:50px;
-  border:none;
-  background:#fff;
-  color:#000;
-  cursor:pointer;
-  transition:.4s;
-  font-weight: 600;
-}
-.hero button:hover{
-  transform:scale(1.07);
-  box-shadow:0 0 40px rgba(255,255,255,.4);
-}
-
-/* ================= MAIN ================= */
-.main{
-  min-height:90vh;
-  display:flex;
-  align-items:center;
-  padding:0 80px;
-  background:
-    linear-gradient(rgba(0,0,0,.65),rgba(0,0,0,.9)),
-    url("https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1600&q=80")
-    center/cover no-repeat;
-}
-.main h2{font-size:52px;margin-bottom:20px}
-.main p{max-width:700px;color:#ccc;font-size:18px}
-
-/* ================= SECTIONS ================= */
-section{padding:140px 80px}
-
-/* ================= FEATURES ================= */
-.features{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:50px;
-}
-.card{
-  background-size:cover;
-  background-position:center;
-  border-radius:26px;
-  padding:44px;
-  position:relative;
-  opacity:0;
-  transform:translateY(60px);
-  transition:1s cubic-bezier(.19,1,.22,1);
-}
-.card::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.9));
-}
-.card *{position:relative;z-index:2}
-.card.show{opacity:1;transform:translateY(0)}
-.card h3{font-size:22px;margin-bottom:14px}
-.card p{color:#ddd;line-height:1.7}
-
-.card.camera{background-image:url("https://images.unsplash.com/photo-1516035069371-29a1b244cc32")}
-.card.cloud{background-image:url("https://images.unsplash.com/photo-1451187580459-43490279c0fa")}
-.card.processing{background-image:url("https://images.unsplash.com/photo-1555949963-aa79dcee981c")}
-.card.mobile{background-image:url("https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f")}
-.card.admin{background-image:url("https://images.unsplash.com/photo-1556155092-8707de31f9c4")}
-
-/* ================= STICKY ================= */
-.sticky{
-  position:sticky;
-  top:0;
-  height:100vh;
-  display:flex;
-  align-items:center;
-  padding:0 80px;
-  background:
-    linear-gradient(rgba(0,0,0,.7),rgba(0,0,0,.9)),
-    url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee")
-    center/cover no-repeat;
-}
-.sticky h2{font-size:52px;margin-bottom:20px}
-.sticky p{color:#ccc;max-width:520px}
-
-/* ================= FLOW ================= */
-.flow{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:40px;
-}
-.flow div{
-  padding:32px;
-  border-radius:20px;
-  border:1px solid rgba(255,255,255,.15);
-  background:rgba(0,0,0,.6);
-  text-align:center;
-  transition:.4s;
-}
-.flow div:hover{
-  transform:translateY(-10px);
-  background:rgba(255,255,255,.05);
-}
-
-/* ================= CTA ================= */
-.cta{
-  background:#111;
-  text-align:center;
-}
-.cta h2{font-size:48px}
-.cta button{
-  margin-top:30px;
-  padding:18px 50px;
-  border-radius:50px;
-  border:none;
-  background:#fff;
-  color:#000;
-  cursor:pointer;
-  transition:.4s;
-}
-.cta button:hover{
-  transform:scale(1.06);
-  box-shadow:0 0 45px rgba(255,255,255,.4);
-}
-
-/* ================= FOOTER ================= */
-footer{
-  padding:40px;
-  text-align:center;
-  color:#777;
-  font-size:14px;
-}
-
-/* ================= ANIMATION ================= */
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(40px)}
-  to{opacity:1;transform:translateY(0)}
-}
-
-/* ================= RESPONSIVE ================= */
-@media(max-width:1024px){
-  nav{padding:18px 40px}
-  section,.main{padding:100px 40px}
-  .hero h1{font-size:48px}
-}
-
-@media(max-width:768px){
-  nav{padding:16px 24px}
-  .nav-links{
-    position:absolute;
-    top:70px;
-    right:0;
-    background:rgba(0,0,0,.9);
-    flex-direction:column;
-    gap:20px;
-    padding:20px;
-    width:200px;
-    display:none;
-    border-radius:8px;
-    animation:slideDown .4s ease forwards;
-  }
-  .nav-links.show{display:flex}
-  .nav-toggle{display:block}
-  .hero h1{font-size:38px}
-  .hero p{font-size:16px}
-  .hero-btns { flex-direction: column; align-items: center; gap: 15px; }
-  .main{ min-height:auto; padding:90px 24px; }
-  .main h2{font-size:36px}
-  section{padding:90px 24px}
-  .features{grid-template-columns:1fr}
-  .sticky{ text-align:center; padding:0 24px; }
-  .sticky h2{font-size:36px}
-  .flow{grid-template-columns:1fr}
-  .cta h2{font-size:36px}
-}
-
-@keyframes slideDown {
-  from {opacity:0; transform:translateY(-20px);}
-  to {opacity:1; transform:translateY(0);}
-}
-</style>
-</head>
-
-<body>
-
-<nav>
-  <div class="nav-brand">📸 LiveGallery</div>
-  <div class="nav-toggle" id="nav-toggle">☰</div>
- 
-    <div class="nav-links" id="nav-links">
-    <a href="#features" class="active">Features</a>
-    <a href="#workflow">Workflow</a>
-    <a href="#admin">Admin</a>
-    <a href="#future">Future</a>
-  </div>
-</nav>
-
-<section class="hero" id="hero">
-  <div class="hero-content">
-    <h1>Real-Time Camera to Cloud</h1>
-    <p>Photos & videos appear instantly in a live gallery.</p>
-    <div class="hero-btns">
-      <button>Camera</button>
-      <button id="photosBtn" class="btn">Photos</button>
-    </div>
-  </div>
-</section>
-<!-- PHOTOS GALLERY SECTION -->
-<!-- <section id="photos" style="display:none; padding: 40px;">
-  <div id="gallery" class="gallery-grid"></div>
-</section>
-
-<main class="main" id="workflow">
-  <section id="photos" style="display:none;">
-  <div id="gallery"></div>
-</section>
-
-  <div>
-    <h2>Live Events. Live Galleries.</h2>
-    <p>Captured moments are uploaded, processed, and delivered instantly.</p>
-  </div>
-</main>
-
-<section id="features">
-  <div class="features">
-    <div class="card camera"><h3>Camera Upload</h3><p>Automatic camera-to-cloud sync.</p></div>
-    <div class="card cloud"><h3>Cloud Storage</h3><p>Secure & scalable infrastructure.</p></div>
-    <div class="card processing"><h3>Processing</h3><p>Compression, thumbnails, AI tags.</p></div>
-    <div class="card mobile"><h3>Mobile App</h3><p>Live gallery for guests.</p></div>
-    <div class="card admin"><h3>Admin Panel</h3><p>Event & media management.</p></div>
-  </div>
-</section>
-
-<section class="sticky" id="admin">
-  <div>
-    <h2>No Waiting. No Cards.</h2>
-    <p>Camera → Cloud → Mobile → Web</p>
-  </div>
-</section>
-
-<section id="future">
-  <div class="flow">
-    <div>📷 Capture</div>
-    <div>📡 Upload</div>
-    <div>☁ Process</div>
-    <div>📱 Deliver</div>
-  </div>
-</section>
-
-<section class="cta">
-  <h2>Future of Live Photography</h2>
-  <button>Start Project</button>
-</section>
-
-<footer>
-  © 2026 Camera-to-Cloud Live Gallery
-</footer>
-
-<script>
-// Animate feature cards on scroll
-const cards=document.querySelectorAll('.card');
-const observer=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting)e.target.classList.add('show');
-  });
-},{threshold:0.2});
-cards.forEach(c=>observer.observe(c));
-
-// Navbar toggle for mobile
-const toggle=document.getElementById('nav-toggle');
-const links=document.getElementById('nav-links');
-toggle.addEventListener('click',()=>{
-  links.classList.toggle('show');
-});
-
-// Optional: Scrollspy to highlight active link
-const sections=document.querySelectorAll("section, main");
-const navLinks=document.querySelectorAll(".nav-links a");
-
-window.addEventListener("scroll",()=>{
-  let current="";
-  sections.forEach(sec=>{
-    const top=window.scrollY;
-    const offset=sec.offsetTop-120;
-    const height=sec.offsetHeight;
-    if(top>=offset && top<offset+height){
-      current=sec.getAttribute("id");
-    }
-  });
-  navLinks.forEach(link=>{
-    link.classList.remove("active");
-    if(link.getAttribute("href").includes(current)){
-      link.classList.add("active");
-    }
-  });
-});
-</script>
- <script type="module" src="javascript.js"></script>
- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
- <script type="module" src="frontend/javascript.js"></script> -->
-<!-- <script src="frontend/javascript.js"></script> ---> 
-<!-- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="javascript.js"></script>
-</body>
-
-</body>
-</html> -->
-
-
-
-
